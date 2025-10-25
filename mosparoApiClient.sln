@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36429.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mosparo.ApiClient", "Mosparo.ApiClient\Mosparo.ApiClient.csproj", "{D87484BB-EACE-4FC1-85BE-DD49F51C3A33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mosparo.ApiClient.Tests", "Mosparo.ApiClient.Tests\Mosparo.ApiClient.Tests.csproj", "{E61146CC-F77C-428D-B8F4-2C53E39B7417}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Projektmappenelemente", "{84D27F74-D2BA-6C25-2661-968F101900D9}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D87484BB-EACE-4FC1-85BE-DD49F51C3A33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D87484BB-EACE-4FC1-85BE-DD49F51C3A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D87484BB-EACE-4FC1-85BE-DD49F51C3A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D87484BB-EACE-4FC1-85BE-DD49F51C3A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E61146CC-F77C-428D-B8F4-2C53E39B7417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E61146CC-F77C-428D-B8F4-2C53E39B7417}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E61146CC-F77C-428D-B8F4-2C53E39B7417}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E61146CC-F77C-428D-B8F4-2C53E39B7417}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {70D97740-FC41-4B92-84C9-6D577108BD75}
+	EndGlobalSection
+EndGlobal
