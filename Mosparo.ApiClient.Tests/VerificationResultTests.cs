@@ -6,7 +6,7 @@ namespace Mosparo.ApiClient.Tests
     public class VerificationResultTests
     {
         [Fact()]
-        public void generateHmacHashTest()
+        public void getResultTest()
         {
             SortedDictionary<string, string> verifiedFields = new SortedDictionary<string, string>()
             {
@@ -25,7 +25,8 @@ namespace Mosparo.ApiClient.Tests
                 { "expected", "test" },
                 { "received", "test2" },
             };
-
+            string debugInformationAsString = "{\"expected\":\"test\",\"received\":\"test2\"}";
+            
             VerificationResult result = new VerificationResult(false, true, verifiedFields, issues, debugInformation);
 
             Xunit.Assert.False(result.isSubmittable());
@@ -37,6 +38,7 @@ namespace Mosparo.ApiClient.Tests
             Xunit.Assert.True(result.hasIssues());
             Xunit.Assert.Equal(issues, result.getIssues());
             Xunit.Assert.Equal(debugInformation, result.getDebugInformation());
+            Xunit.Assert.Equal(debugInformationAsString, result.getDebugInformationAsString());
         }
     }
 }

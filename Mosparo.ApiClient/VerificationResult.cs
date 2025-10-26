@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Mosparo.ApiClient
 {
@@ -64,10 +66,15 @@ namespace Mosparo.ApiClient
         {
             return issues.Count > 0;
         }
-
+        
         public object getDebugInformation()
         {
             return debugInformation;
+        }
+
+        public string getDebugInformationAsString()
+        {
+            return JsonSerializer.Serialize(debugInformation);
         }
     }
 }

@@ -31,6 +31,11 @@ namespace Mosparo.ApiClient
             this.privateKey = privateKey;
         }
 
+        public JsonSerializerOptions getJsonSerializerOptions()
+        {
+            return jsonSerializerOptions;
+        }
+
         public SortedDictionary<string, IFormValue> prepareFormData(SortedDictionary<string, IFormValue> formData)
         {
             SortedDictionary<string, IFormValue> cleanedFormData = cleanupFormData(formData);

@@ -49,7 +49,7 @@ namespace Mosparo.ApiClient
                 { "formSignature", formSignature },
                 { "formData", preparedFormData }
             };
-            string requestSignature = rh.generateHmacHash(apiEndpoint + JsonSerializer.Serialize(requestDataForSignature));
+            string requestSignature = rh.generateHmacHash(apiEndpoint + JsonSerializer.Serialize(requestDataForSignature, rh.getJsonSerializerOptions()));
 
             // Build the request data
             Dictionary<string, string> requestData = new Dictionary<string, string>

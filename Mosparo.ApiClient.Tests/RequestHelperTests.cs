@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text.Json;
 using Xunit;
 
 namespace Mosparo.ApiClient.Tests
@@ -7,6 +8,14 @@ namespace Mosparo.ApiClient.Tests
     {
         string publicKey = "publicKey";
         string privateKey = "privateKey";
+
+        [Fact()]
+        public void getJsonSerializerOptionsTest()
+        {
+            RequestHelper requestHelper = new RequestHelper(publicKey, privateKey);
+
+            Xunit.Assert.IsType<JsonSerializerOptions>(requestHelper.getJsonSerializerOptions());
+        }
 
         [Fact()]
         public void generateHmacHashTest()
