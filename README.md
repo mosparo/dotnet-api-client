@@ -67,21 +67,21 @@ The form is usually not sent with HTTP Post to the backend but is bound to a mod
 2. Include the mosparo script in your form
 
 ```javascript
-    <script src="https://[URL]/build/mosparo-frontend.js" defer></script>
-    <script>
-        var m;
-        window.onload = function(){
-            m = new mosparo('mosparo-box', 'https://[URL]', '[UUID]', '[PUBLIC_KEY]', {loadCssResource: true});
-        };
-    </script>
+<script src="https://[URL]/build/mosparo-frontend.js" defer></script>
+<script>
+    var m;
+    window.onload = function(){
+        m = new mosparo('mosparo-box', 'https://[URL]', '[UUID]', '[PUBLIC_KEY]', {loadCssResource: true});
+    };
+</script>
 ```
 
 Include this div in your form, where you want the mosparo box to be rendered.
 ```html
-    <div 
-        style="margin:5px;"
-        id="mosparo-box"
-    ></div>
+<div 
+    style="margin:5px;"
+    id="mosparo-box"
+></div>
 ```
 
 If your form is not visible when your page is loaded, consider this alternative approach:
@@ -100,60 +100,57 @@ Be aware that in Blazor Web App Interactive javascript calls from the server are
 <script src="https://[URL]/build/mosparo-frontend.js" defer></script>
 
 <script>
-
 var m;
 
 function LoadCaptcha(uuid, publicKey) {
-    
-    m = new mosparo('mosparo-box', 'https://[URL]',
-        uid, key, {
-            onCheckForm: function (result) {
+    m = new mosparo('mosparo-box', 'https://[URL]', uuid, publicKey, {
+        onCheckForm: function (result) {
+            if (!result) {
+                return;
+            }
 
-                if (!result) {
-                    return;
-                }
+            let submitToken = document.getElementById('submit-token');
+            let validationToken = document.getElementById('validation-token');
 
-                let submitToken = document.getElementById('submit-token');
-                let validationToken = document.getElementById('validation-token');
+            submitToken.value = m.submitTokenElement.value;
+            validationToken.value = m.validationTokenElement.value;
 
-                submitToken.value = m.submitTokenElement.value;
-                validationToken.value = m.validationTokenElement.value;
-
-                submitToken.dispatchEvent(new Event('change'));
-                validationToken.dispatchEvent(new Event('change'));
-            }, loadCssResource: true});
+            submitToken.dispatchEvent(new Event('change'));
+            validationToken.dispatchEvent(new Event('change'));
+        },
+        loadCssResource: true,
+    });
 }
-
 </script>
 ```
 
-your Page
+##### Your page:
 ```html
-    @page "/myPage"
-    @inject IJSRuntime JavascriptRuntime
+@page "/myPage"
+@inject IJSRuntime JavascriptRuntime
 
-    <!-- Your form goes here, see below-->
+<!-- Your form goes here, see below-->
 
-    @code{
-        
-        private Model ModelValues = new Model();
+@code{
+    
+    private Model ModelValues = new Model();
 
-        private ElementReference? CaptchaBoxElement;
+    private ElementReference? CaptchaBoxElement;
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && this.CaptchaBoxElement.Context != null)
         {
-            if (firstRender && this.CaptchaBoxElement.Context != null)
-            {
-                await JavascriptRuntime.InvokeVoidAsync("LoadCaptcha", "[UUID]", "[PUBLIC_KEY]");
-            }
-        }
-
-
-        private void OnSubmitButtonClick()
-        {
-            // Create FormRequest object with the model values and call the API client to verify the submission
+            await JavascriptRuntime.InvokeVoidAsync("LoadCaptcha", "[UUID]", "[PUBLIC_KEY]");
         }
     }
+
+
+    private void OnSubmitButtonClick()
+    {
+        // Create FormRequest object with the model values and call the API client to verify the submission
+    }
+}
 
 ```
 
@@ -168,114 +165,113 @@ The values of these fields are then sent to the server and can be used to create
 Note for using mosparo with MudBlazor UI components: MudBlazor should not be used for the two hidden fields, use standard HTML input fields instead.
 
 
-Example form:
+##### Example form:
 ```html
-    <EditForm
-        OnValidSubmit="@this.OnSubmitButtonClick"
-        id="some-form"
-        Model="@this.ModelValues"
-        FormName="SomeForm"
+<EditForm
+    OnValidSubmit="@this.OnSubmitButtonClick"
+    id="some-form"
+    Model="@this.ModelValues"
+    FormName="SomeForm"
+>
+    <div>
+        <label 
+            for="Name"
+        >
+            Name
+        </label>
+
+        <InputText 
+            id="Name"
+            name="Name"
+            @bind-Value="@this.ModelValues.Name"
+            autocomplete="off"
+            max="50"
+            required
+        />
+    </div>
+
+    <div>
+        <label 
+            for="EmailAdress"
+        >
+            Email-Adress
+        </label>
+
+        <InputText 
+            id="EmailAdress"
+            name="EmailAdress"
+            @bind-Value="@this.ModelValues.EmailAdress"
+            autocomplete="off"
+            max="50"
+            required
+        />
+    </div>
+
+    <div>
+        <label 
+            for="Subject"
+        >
+            Subject
+        </label>
+
+        <InputText 
+            id="Subject"
+            name="Subject"
+            @bind-Value="@this.ModelValues.Subject"
+            autocomplete="off"
+            max="50"
+            required
+        />
+    </div>
+
+    <div>
+        <label 
+            for="Message"
+        >
+            Message
+        </label>
+
+        <InputText 
+            id="Message"
+            name="Message"
+            @bind-Value="@this.ModelValues.Message"
+            autocomplete="off"
+            max="300"
+            required
+        />
+    </div>
+
+    <div 
+        style="margin:5px;"
+        @ref="this.CaptchaBoxElement"
+        id="mosparo-box"
+    ></div>
+
+    <input
+        name="SubmitToken"
+        type="hidden"
+        autocomplete="off"
+        class="mosparo__ignored-field"
+        id="submit-token"
+        @bind-value="@this.ModelValues.MosparoSubmitToken"
     >
-        <div>
-            <label 
-                for="Name"
-            >
-                Name
-            </label>
 
-            <InputText 
-                id="Name"
-                name="Name"
-                @bind-Value="@this.ModelValues.Name"
-                autocomplete="off"
-                max="50"
-                required
-            />
-        </div>
+    <input 
+        name="ValidationToken"
+        type="hidden"
+        class="mosparo__ignored-field"
+        autocomplete="off"
+        id="validation-token"
+        @bind-value="@this.ModelValues.MosparoValidationToken"
+    >
 
-        <div>
-            <label 
-                for="EmailAdress"
-            >
-                Email-Adress
-            </label>
+    <button
+        type="submit"
+    >
+        Absenden
+    </button>
 
-            <InputText 
-                id="EmailAdress"
-                name="EmailAdress"
-                @bind-Value="@this.ModelValues.EmailAdress"
-                autocomplete="off"
-                max="50"
-                required
-            />
-        </div>
-
-        <div>
-            <label 
-                for="Subject"
-            >
-                Subject
-            </label>
-
-            <InputText 
-                id="Subject"
-                name="Subject"
-                @bind-Value="@this.ModelValues.Subject"
-                autocomplete="off"
-                max="50"
-                required
-            />
-        </div>
-
-        <div>
-            <label 
-                for="Message"
-            >
-                Message
-            </label>
-
-            <InputText 
-                id="Message"
-                name="Message"
-                @bind-Value="@this.ModelValues.Message"
-                autocomplete="off"
-                max="300"
-                required
-            />
-        </div>
-
-        <div 
-            style="margin:5px;"
-            @ref="this.CaptchaBoxElement"
-            id="mosparo-box"
-        ></div>
-
-        <input
-            name="SubmitToken"
-            type="hidden"
-            autocomplete="off"
-            class="mosparo__ignored-field"
-            id="submit-token"
-            @bind-value="@this.ModelValues.MosparoSubmitToken"
-        >
-
-        <input 
-            name="ValidationToken"
-            type="hidden"
-            class="mosparo__ignored-field"
-            autocomplete="off"
-            id="validation-token"
-            @bind-value="@this.ModelValues.MosparoValidationToken"
-        >
-
-        <button
-            type="submit"
-        >
-            Absenden
-        </button>
-
-    </EditForm>
-
+</EditForm>
 ```
 
 <details>
@@ -283,163 +279,162 @@ Example form:
 <summary>Full Code Sample</summary>
 
 ```html
-    @page "/myPage"
-    @inject IJSRuntime JavascriptRuntime
+@page "/myPage"
+@inject IJSRuntime JavascriptRuntime
 
-    <script src="https://[URL]/build/mosparo-frontend.js" defer></script>
+<script src="https://[URL]/build/mosparo-frontend.js" defer></script>
 
-    <script>
+<script>
 
-    var m;
+var m;
 
-    function LoadCaptcha(uuid, publicKey) {
-    
-        m = new mosparo('mosparo-box', 'https://[URL]',
-            uid, key, {
-                onCheckForm: function (result) {
-
-                    if (!result) {
-                        return;
-                    }
-
-                    let submitToken = document.getElementById('submit-token');
-                    let validationToken = document.getElementById('validation-token');
-
-                    submitToken.value = m.submitTokenElement.value;
-                    validationToken.value = m.validationTokenElement.value;
-
-                    submitToken.dispatchEvent(new Event('change'));
-                    validationToken.dispatchEvent(new Event('change'));
-                }, loadCssResource: true});
-    }
-
-    </script>
-
-    <EditForm
-        OnValidSubmit="@this.OnSubmitButtonClick"
-        id="some-form"
-        Model="@this.ModelValues"
-        FormName="SomeForm"
-    >
-        <div>
-            <label 
-                for="Name"
-            >
-                Name
-            </label>
-
-            <InputText 
-                id="Name"
-                name="Name"
-                @bind-Value="@this.ModelValues.Name"
-                autocomplete="off"
-                max="50"
-                required
-            />
-        </div>
-
-        <div>
-            <label 
-                for="EmailAdress"
-            >
-                Email-Adress
-            </label>
-
-            <InputText 
-                id="EmailAdress"
-                name="EmailAdress"
-                @bind-Value="@this.ModelValues.EmailAdress"
-                autocomplete="off"
-                max="50"
-                required
-            />
-        </div>
-
-        <div>
-            <label 
-                for="Subject"
-            >
-                Subject
-            </label>
-
-            <InputText 
-                id="Subject"
-                name="Subject"
-                @bind-Value="@this.ModelValues.Subject"
-                autocomplete="off"
-                max="50"
-                required
-            />
-        </div>
-
-        <div>
-            <label 
-                for="Message"
-            >
-                Message
-            </label>
-
-            <InputText 
-                id="Message"
-                name="Message"
-                @bind-Value="@this.ModelValues.Message"
-                autocomplete="off"
-                max="300"
-                required
-            />
-        </div>
-
-        <div 
-            style="margin:5px;"
-            @ref="this.CaptchaBoxElement"
-            id="mosparo-box"
-        ></div>
-
-        <input
-            name="SubmitToken"
-            type="hidden"
-            autocomplete="off"
-            class="mosparo__ignored-field"
-            id="submit-token"
-            @bind-value="@this.ModelValues.MosparoSubmitToken"
-        >
-
-        <input 
-            name="ValidationToken"
-            type="hidden"
-            class="mosparo__ignored-field"
-            autocomplete="off"
-            id="validation-token"
-            @bind-value="@this.ModelValues.MosparoValidationToken"
-        >
-
-        <button
-            type="submit"
-        >
-            Absenden
-        </button>
-
-    </EditForm>
-
-    @code{
-        
-        private Model ModelValues = new Model();
-
-        private ElementReference? CaptchaBoxElement;
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender && this.CaptchaBoxElement.Context != null)
-            {
-                await JavascriptRuntime.InvokeVoidAsync("LoadCaptcha", "[UUID]", "[PUBLIC_KEY]");
+function LoadCaptcha(uuid, publicKey) {
+    m = new mosparo('mosparo-box', 'https://[URL]', uuid, publicKey, {
+        onCheckForm: function (result) {
+            if (!result) {
+                return;
             }
-        }
 
-        private void OnSubmitButtonClick()
+            let submitToken = document.getElementById('submit-token');
+            let validationToken = document.getElementById('validation-token');
+
+            submitToken.value = m.submitTokenElement.value;
+            validationToken.value = m.validationTokenElement.value;
+
+            submitToken.dispatchEvent(new Event('change'));
+            validationToken.dispatchEvent(new Event('change'));
+        },
+        loadCssResource: true,
+    });
+}
+
+</script>
+
+<EditForm
+    OnValidSubmit="@this.OnSubmitButtonClick"
+    id="some-form"
+    Model="@this.ModelValues"
+    FormName="SomeForm"
+>
+    <div>
+        <label 
+            for="Name"
+        >
+            Name
+        </label>
+
+        <InputText 
+            id="Name"
+            name="Name"
+            @bind-Value="@this.ModelValues.Name"
+            autocomplete="off"
+            max="50"
+            required
+        />
+    </div>
+
+    <div>
+        <label 
+            for="EmailAdress"
+        >
+            Email-Adress
+        </label>
+
+        <InputText 
+            id="EmailAdress"
+            name="EmailAdress"
+            @bind-Value="@this.ModelValues.EmailAdress"
+            autocomplete="off"
+            max="50"
+            required
+        />
+    </div>
+
+    <div>
+        <label 
+            for="Subject"
+        >
+            Subject
+        </label>
+
+        <InputText 
+            id="Subject"
+            name="Subject"
+            @bind-Value="@this.ModelValues.Subject"
+            autocomplete="off"
+            max="50"
+            required
+        />
+    </div>
+
+    <div>
+        <label 
+            for="Message"
+        >
+            Message
+        </label>
+
+        <InputText 
+            id="Message"
+            name="Message"
+            @bind-Value="@this.ModelValues.Message"
+            autocomplete="off"
+            max="300"
+            required
+        />
+    </div>
+
+    <div 
+        style="margin:5px;"
+        @ref="this.CaptchaBoxElement"
+        id="mosparo-box"
+    ></div>
+
+    <input
+        name="SubmitToken"
+        type="hidden"
+        autocomplete="off"
+        class="mosparo__ignored-field"
+        id="submit-token"
+        @bind-value="@this.ModelValues.MosparoSubmitToken"
+    >
+
+    <input 
+        name="ValidationToken"
+        type="hidden"
+        class="mosparo__ignored-field"
+        autocomplete="off"
+        id="validation-token"
+        @bind-value="@this.ModelValues.MosparoValidationToken"
+    >
+
+    <button
+        type="submit"
+    >
+        Absenden
+    </button>
+
+</EditForm>
+
+@code{
+    
+    private Model ModelValues = new Model();
+
+    private ElementReference? CaptchaBoxElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && this.CaptchaBoxElement.Context != null)
         {
-            // Create FormRequest object with the model values and call the API client to verify the submission
+            await JavascriptRuntime.InvokeVoidAsync("LoadCaptcha", "[UUID]", "[PUBLIC_KEY]");
         }
     }
+
+    private void OnSubmitButtonClick()
+    {
+        // Create FormRequest object with the model values and call the API client to verify the submission
+    }
+}
 
 ```
 
